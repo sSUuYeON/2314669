@@ -18,13 +18,6 @@ from collections import OrderedDict,namedtuple
 providers = ['CUDAExecutionProvider', 'CPUExecutionProvider'] if cuda else ['CPUExecutionProvider'] #['AzureExecutionProvider', 'CPUExecutionProvider'] if cuda else ['CPUExecutionProvider']
 session = ort.InferenceSession(w, providers=providers)
 
-tf.compat.disable_v2_behavior()
-with tf.compat.Session() as sess:
-    x = tf.compat.placeholder(tf.float32, [2])
-    x2 = tf.square(x)
-    print(sess.run(x2, feed_dict={x: [2, 3]}))
-    # [4. 9.]
-
 #print("00000")
 
 def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleup=True, stride=32):
@@ -53,7 +46,9 @@ def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleu
     top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
     left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
     im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
-    return im, r, (dw, dh)
+    dwdh = (dw, dh)
+    ratio = r
+    return im, ratio, dwdh
 
 names = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 
          'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 
@@ -98,8 +93,6 @@ while webcam.isOpened():
     im.shape
 
     outname = [i.name for i in session.get_outputs()]
-    outname
-
     inname = [i.name for i in session.get_inputs()]
    # inname
 
@@ -125,7 +118,7 @@ while webcam.isOpened():
         cv2.rectangle(image,box[:2],box[2:],color,2)
         cv2.putText(image,name,(box[0], box[1] - 2),cv2.FONT_HERSHEY_SIMPLEX,0.75,[225, 255, 255],thickness=2)  
 
-    print('[INFO] draw all detected boxes by Prof. Kim....!')    #<===== 여기에 여러분들의 학번이 표시되도록 합니다.
+    print('[INFO] draw all detected boxes by 2314669')    #<===== 여기에 여러분들의 학번이 표시되도록 합니다.
 
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR) # PIL image --> opencv image Mat buffer
     
